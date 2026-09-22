@@ -9,15 +9,15 @@ def write_json_report(
     ) -> bool:
     try:
         data = sorted(page_data.values(), key=lambda p: p["url"])
-    except Exception as e:
-        print(f"list sort fail: {e}")
+    except Exception as exc:
+        print(f"list sort fail: {exc}")
         return False
 
     try:
         with open(filename, "w", encoding="utf-8") as handle:
             json.dump(data, handle, indent=2)
-    except Exception as e:
-        print(f"file write fail: {e}")
+    except Exception as exc:
+        print(f"file write fail: {exc}")
         return False
 
     return True

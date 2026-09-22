@@ -5,9 +5,10 @@ import sys
 from json_report import write_json_report
 from pprint import pprint
 
+
 async def main():
     if not len(sys.argv) == 4:
-        print("Usage:\n\tuv run main.py URL MAX_CON MAX_PAGES\n")
+        print("Usage:\n\tuv run URL MAX_CON MAX_PAGES\n")
         sys.exit(1)
     else:
         url = str(sys.argv[1])
