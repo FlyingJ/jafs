@@ -16,3 +16,8 @@ class TestCrawer(unittest.TestCase):
         for url, expectation in normalize_url_test_cases:
             result = sc.normalize_url(url)
             self.assertEqual(result, expectation)
+
+if __name__ == "__main__":
+    unittest.main()
+
+
