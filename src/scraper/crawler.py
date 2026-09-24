@@ -15,7 +15,8 @@ class AsyncCrawler():
             raise ValueError(f"tried setting max_pages to {max_pages}... think you are funny?!")
         self.max_pages = max_pages
         self.should_stop = False
-        self.all_tasks = set()
+        self.all_tasks: set[asyncio.Task[None]] = set()
+        self.unfinished = 0
         self.lock = asyncio.Lock()
         if max_concurrency < 1:
             raise ValueError(f"tried setting the maximum number of concurrent tasks to {max_concurrency}...have an exception...")
@@ -51,6 +52,7 @@ class AsyncCrawler():
                 return False
 
             self.visited.add(normalized_url)
+            self.unfinished++
             return True
 
 
@@ -83,12 +85,10 @@ class AsyncCrawler():
     async def crawl_page(self, url: str) -> None:
         async with self.semaphore:
             html = await self.get_html(url)
-
         page_data = extract_page_data(html, url)
+        await self.spawn_crawls(page_data["outgoing_links"])
         async with self.lock:
             self.page_data[normalize_url(url)] = page_data
-
-        await self.spawn_crawls(page_data["outgoing_links"])
 
 
     async def spawn_crawls(self, urls: list[str]) -> None:
@@ -103,9 +103,10 @@ class AsyncCrawler():
         start_url = self.base_url
         if await self.add_page_visit(start_url):
             await self.crawl_page(start_url)
-        # this part is still janky because we may snapshot a still-growing set
-        # and cause session closure prematurely
-        await asyncio.gather(*self.all_tasks)
+        # wait for jobs to finish
+        while self.all_tasks:
+            done, pending = await asyncio.wait(self.all_tasks, return_when=asyncio.FIRST_COMPLETED)
+
         return self.page_data
 
 
