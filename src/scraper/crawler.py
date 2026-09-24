@@ -52,7 +52,7 @@ class AsyncCrawler():
                 return False
 
             self.visited.add(normalized_url)
-            self.unfinished++
+            self.unfinished += 1
             return True
 
 
@@ -83,13 +83,16 @@ class AsyncCrawler():
 
 
     async def crawl_page(self, url: str) -> None:
-        async with self.semaphore:
-            html = await self.get_html(url)
-        page_data = extract_page_data(html, url)
-        await self.spawn_crawls(page_data["outgoing_links"])
-        async with self.lock:
-            self.page_data[normalize_url(url)] = page_data
-
+        try:
+            async with self.semaphore:
+                html = await self.get_html(url)
+            page_data = extract_page_data(html, url)
+            async with self.lock:
+                self.page_data[normalize_url(url)] = page_data
+            await self.spawn_crawls(page_data["outgoing_links"])
+        finally:
+            async with self.lock:
+                self.unfinished -= 1
 
     async def spawn_crawls(self, urls: list[str]) -> None:
         for url in urls:
