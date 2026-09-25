@@ -107,9 +107,23 @@ class AsyncCrawler():
         if await self.add_page_visit(start_url):
             await self.crawl_page(start_url)
         # wait for jobs to finish
-        while self.all_tasks:
-            done, pending = await asyncio.wait(self.all_tasks, return_when=asyncio.FIRST_COMPLETED)
+        while self.unfinished > 0:
+            if not self.all_tasks:
+                raise RuntimeError("unfinished crawl work exists but no tasks are running")
 
+            done, pending = await asyncio.wait(
+                self.all_tasks,
+                return_when=asyncio.FIRST_COMPLETED
+            )
+
+            for task in done:
+                try:
+                    await task
+                    print("task complete")
+                except Exception as exc:
+                    print(f"exception: {exc}")
+                except asyncio.CancelledError:
+                    print("task cancelled")
         return self.page_data
 
 
