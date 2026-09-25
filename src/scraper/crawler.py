@@ -94,6 +94,7 @@ class AsyncCrawler():
             async with self.lock:
                 self.unfinished -= 1
 
+
     async def spawn_crawls(self, urls: list[str]) -> None:
         for url in urls:
             if await self.add_page_visit(url):
@@ -124,8 +125,11 @@ class AsyncCrawler():
                     print(f"exception: {exc}")
                 except asyncio.CancelledError:
                     print("task cancelled")
+        print(f"visited:   {len(self.visited)}")
+        print(f"page_data: {len(self.page_data)}")
+        print(f"unfinished: {self.unfinished}")
+        print(f"all_tasks: {len(self.all_tasks)}")
         return self.page_data
-
 
 
 async def crawl_site_async(url: str, max_concurrency: int, max_pages: int) -> dict[str, PageData]:

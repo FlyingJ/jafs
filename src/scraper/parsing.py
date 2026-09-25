@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup, Tag
 from typing import TypedDict
-
+from urllib.parse import urljoin, urlsplit
 
 class PageData(TypedDict):
     url: str
