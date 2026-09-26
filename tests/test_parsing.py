@@ -23,10 +23,10 @@ get_urls_from_html_test_cases = [
     (("""<html><body></body></html>""", ""), []),
     (("""""", "https://www.example.com/"), []),
     (("""""", ""), []),
-    (("""<html><body><a href="https://crawler-test.com">Go to Boot.dev</a><img src="/logo.png" alt="Boot.dev Logo" /></body></html>""", "https://example.com/"), ["https://crawler-test.com", ]),
-    (("""<html><body><h1>Test Title</h1><p>This is the first paragraph.</p><a href="/link1">Link 1</a> <img src="/image1.jpg" alt="Image 1"> </body></html>""", "https://crawler-test.com"), ["https://crawler-test.com/link1", ]),
-    (("""<html><body><h1>Test Title</h1><p>This is the first paragraph.</p><a href="http://some.ai/thingy-for-the-masses/">Link 1</a> <img src="/image1.jpg" alt="Image 1"> </body></html>""", "https://crawler-test.com"), ["http://some.ai/thingy-for-the-masses/", ]),
-    (("""<html><body><h1>Test Title</h1><p>This is the first paragraph.</p><a href="http://some.ai/thingy-for-the-masses/">AI Link 1</a><a href="/Link1.html">Link 1</a> <img src="/image1.jpg" alt="Image 1"> </body></html>""", "https://crawler-test.com"), ["http://some.ai/thingy-for-the-masses/", "https://crawler-test.com/Link1.html", ]),
+    (("""<html><body><a href="https://sp.r-test.com">Go to Boot.dev</a><img src="/logo.png" alt="Boot.dev Logo" /></body></html>""", "https://example.com/"), ["https://sp.r-test.com", ]),
+    (("""<html><body><h1>Test Title</h1><p>This is the first paragraph.</p><a href="/link1">Link 1</a> <img src="/image1.jpg" alt="Image 1"> </body></html>""", "https://sp.r-test.com"), ["https://sp.r-test.com/link1", ]),
+    (("""<html><body><h1>Test Title</h1><p>This is the first paragraph.</p><a href="http://some.ai/thingy-for-the-masses/">Link 1</a> <img src="/image1.jpg" alt="Image 1"> </body></html>""", "https://sp.r-test.com"), ["http://some.ai/thingy-for-the-masses/", ]),
+    (("""<html><body><h1>Test Title</h1><p>This is the first paragraph.</p><a href="http://some.ai/thingy-for-the-masses/">AI Link 1</a><a href="/Link1.html">Link 1</a> <img src="/image1.jpg" alt="Image 1"> </body></html>""", "https://sp.r-test.com"), ["http://some.ai/thingy-for-the-masses/", "https://sp.r-test.com/Link1.html", ]),
 ]
 
 get_images_from_html_test_cases = [
@@ -34,7 +34,7 @@ get_images_from_html_test_cases = [
     (("""<html><body></body></html>""", ""), []),
     (("""""", "https://www.example.com/"), []),
     (("""""", ""), []),
-    (("""<html><body><a href="https://crawler-test.com">Go to Boot.dev</a><img src="/logo.png" alt="Boot.dev Logo" /></body></html>""", "https://example.com/"), ["https://example.com/logo.png"]),
+    (("""<html><body><a href="https://sp.r-test.com">Go to Boot.dev</a><img src="/logo.png" alt="Boot.dev Logo" /></body></html>""", "https://example.com/"), ["https://example.com/logo.png"]),
 ]
 
 extract_page_data_test_cases = [
@@ -45,13 +45,13 @@ extract_page_data_test_cases = [
             <a href="/link1">Link 1</a>
             <img src="/image1.jpg" alt="Image 1">
         </body></html>''',
-        "https://crawler-test.com"),
+        "https://sp.r-test.com"),
         {
-            "url": "https://crawler-test.com",
+            "url": "https://sp.r-test.com",
             "heading": "Test Title",
             "first_paragraph": "This is the first paragraph.",
-            "outgoing_links": ["https://crawler-test.com/link1"],
-            "image_urls": ["https://crawler-test.com/image1.jpg"]
+            "outgoing_links": ["https://sp.r-test.com/link1"],
+            "image_urls": ["https://sp.r-test.com/image1.jpg"]
         }
     ),
     (
@@ -334,45 +334,33 @@ extract_page_data_test_cases = [
 
 
 class TestParsing(unittest.TestCase):
-    def test_NAME(self):
-        for TEST_CASE in TEST_CASES:
-            result = NAME(args)
-            self.assertEqual(result, expectation)
-
-
-    def test_normalize_url(self):
-        for text, expectation in normalize_url_test_cases: 
-            result = crawl.normalize_url(text)
-            self.assertEqual(result, expectation)
-
-
     def test_get_heading_from_html(self):
         for html, expectation in get_heading_from_html_test_cases:
-            result = crawl.get_heading_from_html(html)
+            result = sp.get_heading_from_html(html)
             self.assertEqual(result, expectation)
 
 
     def test_get_first_paragraph_from_html(self):
         for html, expectation in get_first_paragraph_from_html_test_cases:
-            result = crawl.get_first_paragraph_from_html(html)
+            result = sp.get_first_paragraph_from_html(html)
             self.assertEqual(result, expectation)
 
 
     def test_get_urls_from_html(self):
         for ((html, url), expectation) in get_urls_from_html_test_cases:
-            result = crawl.get_urls_from_html(html, url)
+            result = sp.get_urls_from_html(html, url)
             self.assertEqual(result, expectation)
 
 
     def test_get_images_from_html(self):
         for ((html, url), expectation) in get_images_from_html_test_cases:
-            result = crawl.get_images_from_html(html, url)
+            result = sp.get_images_from_html(html, url)
             self.assertEqual(result, expectation)
 
 
     def test_extract_page_data(self):
         for ((html, url), expectation) in extract_page_data_test_cases:
-            result = crawl.extract_page_data(html, url)
+            result = sp.extract_page_data(html, url)
             self.assertEqual(result, expectation)
 
 
